@@ -4,6 +4,7 @@ from pydantic import BaseModel
 
 
 class BeverageType(str, Enum):
+    AUTO = "auto"
     SPIRITS = "spirits"
     BEER = "beer"
     WINE = "wine"

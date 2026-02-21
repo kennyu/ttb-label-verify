@@ -4,6 +4,7 @@ from loguru import logger
 
 from api.models.batch import LabelGroupRequest
 from api.models.label import (
+    BeverageType,
     FieldResult,
     LabelVerificationResult,
     OverallStatus,
@@ -14,6 +15,25 @@ from api.validators.beer import validate_beer
 from api.validators.health_warning import validate_warning_exact
 from api.validators.spirits import validate_spirits
 from api.validators.wine import validate_wine
+
+
+def _resolve_auto_beverage_type(extracted: dict[str, str | None]) -> BeverageType:
+    detected = (extracted.get("beverage_type") or "").strip().lower()
+    if detected in {BeverageType.SPIRITS.value, BeverageType.BEER.value, BeverageType.WINE.value}:
+        return BeverageType(detected)
+
+    class_type = (extracted.get("class_type") or "").lower()
+    spirits_tokens = ("whiskey", "whisky", "bourbon", "gin", "rum", "vodka", "tequila", "brandy")
+    beer_tokens = ("beer", "ale", "lager", "stout", "porter", "pilsner", "ipa")
+    wine_tokens = ("wine", "cabernet", "merlot", "pinot", "chardonnay", "sauvignon", "sparkling")
+    if any(token in class_type for token in spirits_tokens):
+        return BeverageType.SPIRITS
+    if any(token in class_type for token in beer_tokens):
+        return BeverageType.BEER
+    if any(token in class_type for token in wine_tokens):
+        return BeverageType.WINE
+
+    return BeverageType.SPIRITS
 
 
 async def verify_label_group(group: LabelGroupRequest) -> LabelVerificationResult:
@@ -51,9 +71,18 @@ async def verify_label_group(group: LabelGroupRequest) -> LabelVerificationResul
                 sorted(unreadable),
             )
 
-        if group.beverage_type.value == "spirits":
+        resolved_beverage_type = group.beverage_type
+        if group.beverage_type == BeverageType.AUTO:
+            resolved_beverage_type = _resolve_auto_beverage_type(extracted)
+            logger.info(
+                "Auto beverage type resolved label_id={} resolved_beverage_type={}",
+                group.label_id,
+                resolved_beverage_type.value,
+            )
+
+        if resolved_beverage_type.value == "spirits":
             fields = validate_spirits(extracted, unreadable)
-        elif group.beverage_type.value == "beer":
+        elif resolved_beverage_type.value == "beer":
             fields = validate_beer(extracted, unreadable)
         else:
             fields = validate_wine(extracted, unreadable)
@@ -110,7 +139,7 @@ async def verify_label_group(group: LabelGroupRequest) -> LabelVerificationResul
             label_id=group.label_id,
             label_name=group.label_name,
             overall_status=overall,
-            beverage_type=group.beverage_type,
+            beverage_type=resolved_beverage_type,
             fields=fields,
             escalation_reason=escalation_reason,
             images_processed=len(group.images),
@@ -126,7 +155,7 @@ async def verify_label_group(group: LabelGroupRequest) -> LabelVerificationResul
             label_id=group.label_id,
             label_name=group.label_name,
             overall_status=OverallStatus.FAIL,
-            beverage_type=group.beverage_type,
+            beverage_type=BeverageType.SPIRITS if group.beverage_type == BeverageType.AUTO else group.beverage_type,
             fields=[
                 FieldResult(
                     field_name="ocr_extraction",
@@ -149,7 +178,7 @@ async def verify_label_group(group: LabelGroupRequest) -> LabelVerificationResul
             label_id=group.label_id,
             label_name=group.label_name,
             overall_status=OverallStatus.ERROR,
-            beverage_type=group.beverage_type,
+            beverage_type=BeverageType.SPIRITS if group.beverage_type == BeverageType.AUTO else group.beverage_type,
             fields=[
                 FieldResult(
                     field_name="processing",

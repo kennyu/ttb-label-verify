@@ -14,6 +14,7 @@ class ExtractionFailed(Exception):
 
 
 class ExtractionPayload(BaseModel):
+    beverage_type: str | None = None
     brand_name: str | None = None
     class_type: str | None = None
     alcohol_content: str | None = None
@@ -70,8 +71,9 @@ async def extract_label_fields(
 
     instruction = (
         "Extract required TTB label fields from these product label images. "
-        "Return strict JSON only with keys: brand_name, class_type, alcohol_content, "
-        "net_contents, name_address, government_warning, unreadable_fields (array of keys)."
+        "Return strict JSON only with keys: beverage_type, brand_name, class_type, alcohol_content, "
+        "net_contents, name_address, government_warning, unreadable_fields (array of keys). "
+        "Set beverage_type to one of: spirits, beer, wine."
     )
     if specialized_retry:
         instruction += " Focus on noisy, low-contrast text and infer layout context where possible."

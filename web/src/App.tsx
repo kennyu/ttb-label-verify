@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 
-type BeverageType = "spirits" | "beer" | "wine";
+type BeverageType = "auto" | "spirits" | "beer" | "wine";
 
 type UploadedImage = {
   id: string;
@@ -74,7 +74,7 @@ export default function App() {
   const [groups, setGroups] = useState<LabelGroup[]>([]);
   const [labelName, setLabelName] = useState("");
   const [labelNameEdited, setLabelNameEdited] = useState(false);
-  const [beverageType, setBeverageType] = useState<BeverageType>("spirits");
+  const [beverageType, setBeverageType] = useState<BeverageType>("auto");
 
   const [results, setResults] = useState<LabelResult[]>([]);
   const [batchId, setBatchId] = useState<string>("");
@@ -366,6 +366,7 @@ export default function App() {
             }}
           />
           <select value={beverageType} onChange={(e) => setBeverageType(e.target.value as BeverageType)}>
+            <option value="auto">Auto-detect (Recommended)</option>
             <option value="spirits">Distilled Spirits</option>
             <option value="beer">Beer / Malt Beverage</option>
             <option value="wine">Wine (7%+ ABV)</option>
