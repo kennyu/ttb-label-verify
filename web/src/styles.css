@@ -1,0 +1,175 @@
+:root {
+  font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+  color: #13222f;
+  background: radial-gradient(circle at 20% 0%, #e9f6ee 0%, #d7ebff 35%, #eef3f8 100%);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+.page {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  padding: 16px;
+}
+
+.panel {
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid #b6c8d8;
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.subtitle {
+  margin-top: -4px;
+  color: #35546d;
+}
+
+.row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin: 8px 0;
+  flex-wrap: wrap;
+}
+
+button,
+.button-link {
+  border: 1px solid #143f5d;
+  background: #1f5a81;
+  color: #fff;
+  border-radius: 8px;
+  padding: 8px 12px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+input,
+select {
+  padding: 8px;
+  border: 1px solid #89a2b6;
+  border-radius: 8px;
+}
+
+.grid {
+  display: grid;
+  gap: 8px;
+}
+
+.chip {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  border: 1px solid #95b3c7;
+  border-radius: 8px;
+  padding: 8px;
+  background: #f5faff;
+}
+
+.thumb {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #b4c8d8;
+  background: #fff;
+}
+
+.thumb-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.result-image-row {
+  display: grid;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.result-image {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  border: 1px solid #b4c8d8;
+  background: #fff;
+}
+
+.group-card,
+.result-card {
+  border: 1px solid #9cb2c4;
+  border-radius: 10px;
+  padding: 10px;
+  background: #fff;
+}
+
+.group-card header,
+.result-card header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.fields-list {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+}
+
+.fields-list li {
+  display: grid;
+  grid-template-columns: 1fr 80px 1fr 1fr 120px;
+  gap: 8px;
+  border-top: 1px solid #d8e2eb;
+  padding: 6px 0;
+  font-size: 13px;
+}
+
+.status {
+  font-weight: 700;
+}
+
+.status.pass {
+  color: #0c7a43;
+}
+
+.status.fail,
+.status.error {
+  color: #b12626;
+}
+
+.status.escalate {
+  color: #9b5a00;
+}
+
+.error,
+.warn {
+  color: #b12626;
+}
+
+.meta,
+.progress {
+  color: #35546d;
+}
+
+@media (max-width: 980px) {
+  .page {
+    grid-template-columns: 1fr;
+  }
+
+  .fields-list li {
+    grid-template-columns: 1fr;
+  }
+}
